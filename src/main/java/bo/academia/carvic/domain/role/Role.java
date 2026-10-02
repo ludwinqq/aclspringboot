@@ -1,5 +1,6 @@
 package bo.academia.carvic.domain.role;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Role {
@@ -8,11 +9,13 @@ public class Role {
     private String name;
     private String description;
     private Integer status = 1;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public Role() {
     }
 
-    public Role(UUID id, String name, String description, Integer status) {
+    public Role(UUID id, String name, String description, Integer status, LocalDateTime createdAt, LocalDateTime updatedAt) {
 
         if ( name == null || name.isBlank() ) {
             throw new IllegalArgumentException("Nombre es requerido");
@@ -22,6 +25,8 @@ public class Role {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public UUID getId() {
@@ -56,5 +61,19 @@ public class Role {
         this.status = status;
     }
 
-    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void getCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void getUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

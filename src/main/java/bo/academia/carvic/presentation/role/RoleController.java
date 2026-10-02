@@ -93,7 +93,9 @@ public class RoleController {
             role.getId(),
             role.getName(),
             role.getDescription(),
-            role.getStatus()
+            role.getStatus(),
+            role.getCreatedAt(),
+            role.getUpdatedAt()
         );
     }
 }

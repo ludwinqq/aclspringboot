@@ -32,7 +32,6 @@ public class RoleRepositoryImpl implements RoleRepository {
         if ( role.getStatus() != null ) {
             entity.setStatus(role.getStatus()); // Mantiene el status = 1 por defecto de tu dominio
         }
-        
 
         // Hibernate guarda en la BD, genera el UUID, createdAt y updatedAt automáticamente
         RoleEntity saved = repository.save(entity);
@@ -80,11 +79,22 @@ public class RoleRepositoryImpl implements RoleRepository {
      * hacia la Capa de Dominio, asegurando que las fechas y estados nunca se queden en null.
      */
     private Role mapToDomain(RoleEntity entity) {
-        Role domain = new Role();
+        /*Role domain = new Role();
         domain.setId(entity.getId());
         domain.setName(entity.getName());
         domain.setDescription(entity.getDescription());
         domain.setStatus(entity.getStatus());
-        return domain;
+        return domain;*/
+        if (entity == null) {
+            return null;
+        }
+        return new Role(
+            entity.getId(),
+            entity.getName(),
+            entity.getDescription(),
+            entity.getStatus(),
+            entity.getCreatedAt(), // <--- ¡Asegúrate de pasarlo aquí!
+            entity.getUpdatedAt()  // <--- ¡Y aquí!
+        );
     }
 }
