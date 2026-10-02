@@ -2,9 +2,7 @@ package bo.academia.carvic.domain.user;
 
 import java.util.UUID;
 
-import bo.academia.carvic.domain.BaseAuditableEntity;
-
-public class User extends BaseAuditableEntity {
+public class User {
 
     private UUID id;
     private String username;
@@ -13,12 +11,26 @@ public class User extends BaseAuditableEntity {
     private String refreshTokenHash;
     private Boolean requirePasswordChange;
     private UUID roleId;
+    private Integer status = 1;
     
     public User() {
     }
 
     public User(UUID id, String username, String email, String password, String refreshTokenHash,
-            Boolean requirePasswordChange, UUID roleId) {
+            Boolean requirePasswordChange, UUID roleId, Integer status) {
+        
+        if ( username == null || username.isBlank() ) {
+            throw new IllegalArgumentException("Username requerido");
+        }
+
+        if ( password == null || password.isBlank() ) {
+            throw new IllegalArgumentException("Password requerido");
+        }
+
+        if ( email == null || email.isBlank() ) {
+            throw new IllegalArgumentException("email requerido");
+        }
+
         this.id = id;
         this.username = username;
         this.email = email;
@@ -26,6 +38,7 @@ public class User extends BaseAuditableEntity {
         this.refreshTokenHash = refreshTokenHash;
         this.requirePasswordChange = requirePasswordChange;
         this.roleId = roleId;
+        this.status = status;
     }
 
     public UUID getId() {
@@ -83,5 +96,13 @@ public class User extends BaseAuditableEntity {
     public void setRoleId(UUID roleId) {
         this.roleId = roleId;
     }
-    
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+  
 }

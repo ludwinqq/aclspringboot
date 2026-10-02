@@ -1,7 +1,6 @@
 package bo.academia.carvic.infrastructure.persistence.role;
 
 import java.util.UUID;
-
 import bo.academia.carvic.infrastructure.persistence.BaseAuditableData;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity 
 @Table (name = "roles")
-public class RoleEntity extends BaseAuditableData {
+public class RoleEntity extends BaseAuditableData{
 
     @Id 
     @GeneratedValue (strategy = GenerationType.UUID)
@@ -63,5 +62,5 @@ public class RoleEntity extends BaseAuditableData {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
 }

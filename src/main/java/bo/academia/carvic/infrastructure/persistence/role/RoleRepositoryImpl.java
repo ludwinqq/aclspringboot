@@ -3,11 +3,13 @@ package bo.academia.carvic.infrastructure.persistence.role;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Repository;
 
 import bo.academia.carvic.domain.role.Role;
 import bo.academia.carvic.domain.role.RoleRepository;
 
+@Repository 
 public class RoleRepositoryImpl implements RoleRepository {
 
     private final RoleJpaRepository repository;
@@ -19,9 +21,18 @@ public class RoleRepositoryImpl implements RoleRepository {
     @Override
     public Role save(Role role) {
         RoleEntity entity = new RoleEntity();
+
+        if ( role.getId() != null ) {
+            entity.setId(role.getId());
+        }
+
         entity.setName(role.getName());
         entity.setDescription(role.getDescription());
-        entity.setStatus(role.getStatus()); // Mantiene el status = 1 por defecto de tu dominio
+        
+        if ( role.getStatus() != null ) {
+            entity.setStatus(role.getStatus()); // Mantiene el status = 1 por defecto de tu dominio
+        }
+        
 
         // Hibernate guarda en la BD, genera el UUID, createdAt y updatedAt automáticamente
         RoleEntity saved = repository.save(entity);
@@ -56,7 +67,7 @@ public class RoleRepositoryImpl implements RoleRepository {
     public List<Role> findAll() {
         return repository.findAll().stream()
                 .map(this::mapToDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -74,8 +85,6 @@ public class RoleRepositoryImpl implements RoleRepository {
         domain.setName(entity.getName());
         domain.setDescription(entity.getDescription());
         domain.setStatus(entity.getStatus());
-        domain.setCreatedAt(entity.getCreatedAt());
-        domain.setUpdatedAt(entity.getUpdatedAt());
         return domain;
     }
 }

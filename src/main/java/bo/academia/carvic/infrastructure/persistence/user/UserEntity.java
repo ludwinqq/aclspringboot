@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 
 @Entity 
 @Table (name = "users")
-public class UserEntity extends BaseAuditableData {
+public class UserEntity extends BaseAuditableData{
 
     @Id 
     @GeneratedValue (strategy = GenerationType.UUID)
@@ -127,5 +127,5 @@ public class UserEntity extends BaseAuditableData {
     public void setRole(RoleEntity role) {
         this.role = role;
     }
-
+    
 }

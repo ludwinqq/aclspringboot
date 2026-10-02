@@ -1,29 +1,28 @@
-package bo.academia.carvic.domain.role;
+package bo.academia.carvic.presentation.role.dto;
 
+//import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class Role {
+public class RoleResponseDto {
 
     private UUID id;
     private String name;
     private String description;
-    private Integer status = 1;
+    private Integer status;
+    //private LocalDateTime createdAt;
 
-    public Role() {
+    public RoleResponseDto() {
     }
 
-    public Role(UUID id, String name, String description, Integer status) {
-
-        if ( name == null || name.isBlank() ) {
-            throw new IllegalArgumentException("Nombre es requerido");
-        }
-        
+    public RoleResponseDto(UUID id, String name, String description, Integer status) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
+        //this.createdAt = createdAt;
     }
 
+    // Getters y Setters
     public UUID getId() {
         return id;
     }
@@ -56,5 +55,11 @@ public class Role {
         this.status = status;
     }
 
-    
+    /*public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }*/
 }
