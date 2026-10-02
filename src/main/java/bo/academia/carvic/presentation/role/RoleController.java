@@ -3,8 +3,6 @@ package bo.academia.carvic.presentation.role;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,39 +42,38 @@ public class RoleController {
         this.updateRoleUseCase = updateRoleUseCase;
     }
 
+    @GetMapping ("/name/{name}")
+    public RoleResponseDto getByName(@PathVariable String name) {
+        Role role = findByNameRoleUseCase.execute(name);
+        return mapToResponse(role);
+    }
+
     @PostMapping
-    public ResponseEntity<RoleResponseDto> create(@Valid @RequestBody CreateRoleRequestDto requestDto) {
+    public RoleResponseDto create(@Valid @RequestBody CreateRoleRequestDto requestDto) {
         Role role = new Role();
         role.setName(requestDto.getName());
         role.setDescription(requestDto.getDescription());
 
         Role saved = createRoleUseCase.execute(role);
-
-        RoleResponseDto responseDto = mapToResponse(saved);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+     
+        return mapToResponse(saved);
     }
 
-    @GetMapping 
-    public ResponseEntity<List<RoleResponseDto>> getAll() {
-        List<RoleResponseDto> responseDto = findAllRoleUseCase.execute().stream().map(e -> new RoleResponseDto(
-            e.getId(),
-            e.getName(),
-            e.getDescription(),
-            e.getStatus()
-        )).toList();
-
-        return ResponseEntity.ok(responseDto);
+    @GetMapping
+    public List<RoleResponseDto> getAll() {
+        return findAllRoleUseCase.execute().stream()
+                .map(this::mapToResponse)
+                .toList(); // Retornas la lista pelada
     }
 
     @GetMapping ("/{id}")
-    public ResponseEntity<RoleResponseDto> getById(@PathVariable UUID id) {
+    public RoleResponseDto getById(@PathVariable UUID id) {
         Role role = findByIdRoleUseCase.execute(id);
-        return ResponseEntity.ok(mapToResponse(role));
+        return mapToResponse(role);
     }
 
     @PutMapping ("/{id}")
-    public ResponseEntity<RoleResponseDto> update(@PathVariable UUID id, @Valid @RequestBody UpdateRoleRequestDto requestDto) {
+    public RoleResponseDto update(@PathVariable UUID id, @Valid @RequestBody UpdateRoleRequestDto requestDto) {
         Role role = findByIdRoleUseCase.execute(id);
         
         if (requestDto.getName() != null) {
@@ -88,7 +85,7 @@ public class RoleController {
         }
 
         Role updated = updateRoleUseCase.execute(role);
-        return ResponseEntity.ok(mapToResponse(updated));
+        return mapToResponse(updated);
     }
 
     private RoleResponseDto mapToResponse(Role role) {
