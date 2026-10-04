@@ -52,7 +52,7 @@ public class UserEntity extends BaseAuditableData{
     @Column (
         name = "require_password_change"
     )
-    private Boolean requirePasswordChange;
+    private Boolean requirePasswordChange = true;
 
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn (name = "role_id", nullable = false)

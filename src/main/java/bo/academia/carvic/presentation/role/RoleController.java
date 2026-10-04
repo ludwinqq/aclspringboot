@@ -20,6 +20,7 @@ import bo.academia.carvic.domain.role.Role;
 import bo.academia.carvic.presentation.role.dto.CreateRoleRequestDto;
 import bo.academia.carvic.presentation.role.dto.RoleResponseDto;
 import bo.academia.carvic.presentation.role.dto.UpdateRoleRequestDto;
+import bo.academia.carvic.presentation.role.mapper.RoleMapper;
 import jakarta.validation.Valid;
 
 @RestController 
@@ -31,71 +32,50 @@ public class RoleController {
     private final FindByIdRoleUseCase findByIdRoleUseCase;
     private final FindByNameRoleUseCase findByNameRoleUseCase;
     private final UpdateRoleUseCase updateRoleUseCase;
+    private final RoleMapper roleMapper;
     
     public RoleController(CreateRoleUseCase createRoleUseCase, FindAllRoleUseCase findAllRoleUseCase,
             FindByIdRoleUseCase findByIdRoleUseCase, FindByNameRoleUseCase findByNameRoleUseCase,
-            UpdateRoleUseCase updateRoleUseCase) {
+            UpdateRoleUseCase updateRoleUseCase, RoleMapper roleMapper) {
         this.createRoleUseCase = createRoleUseCase;
         this.findAllRoleUseCase = findAllRoleUseCase;
         this.findByIdRoleUseCase = findByIdRoleUseCase;
         this.findByNameRoleUseCase = findByNameRoleUseCase;
         this.updateRoleUseCase = updateRoleUseCase;
+        this.roleMapper = roleMapper;
     }
 
     @GetMapping ("/name/{name}")
     public RoleResponseDto getByName(@PathVariable String name) {
         Role role = findByNameRoleUseCase.execute(name);
-        return mapToResponse(role);
+        return roleMapper.toResponse(role);
     }
 
     @PostMapping
     public RoleResponseDto create(@Valid @RequestBody CreateRoleRequestDto requestDto) {
-        Role role = new Role();
-        role.setName(requestDto.getName());
-        role.setDescription(requestDto.getDescription());
-
-        Role saved = createRoleUseCase.execute(role);
-     
-        return mapToResponse(saved);
+        Role role = roleMapper.toDomain(requestDto);
+        Role createRole = createRoleUseCase.execute(role);
+        return roleMapper.toResponse(createRole);
     }
 
     @GetMapping
     public List<RoleResponseDto> getAll() {
         return findAllRoleUseCase.execute().stream()
-                .map(this::mapToResponse)
+                .map(roleMapper::toResponse)
                 .toList(); // Retornas la lista pelada
     }
 
     @GetMapping ("/{id}")
     public RoleResponseDto getById(@PathVariable UUID id) {
         Role role = findByIdRoleUseCase.execute(id);
-        return mapToResponse(role);
+        return roleMapper.toResponse(role);
     }
 
     @PutMapping ("/{id}")
     public RoleResponseDto update(@PathVariable UUID id, @Valid @RequestBody UpdateRoleRequestDto requestDto) {
-        Role role = findByIdRoleUseCase.execute(id);
-        
-        if (requestDto.getName() != null) {
-        role.setName(requestDto.getName());
-        }
-        
-        if (requestDto.getDescription() != null) {
-            role.setDescription(requestDto.getDescription());
-        }
-
-        Role updated = updateRoleUseCase.execute(role);
-        return mapToResponse(updated);
+        Role role = roleMapper.toDomain(requestDto);
+        Role updateRole = updateRoleUseCase.execute(id, role);
+        return roleMapper.toResponse(updateRole);
     }
 
-    private RoleResponseDto mapToResponse(Role role) {
-        return new RoleResponseDto(
-            role.getId(),
-            role.getName(),
-            role.getDescription(),
-            role.getStatus(),
-            role.getCreatedAt(),
-            role.getUpdatedAt()
-        );
-    }
 }

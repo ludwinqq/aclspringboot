@@ -24,28 +24,35 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        RoleEntity roleEntity = roleJpaRepository.findById(user.getRoleId()).orElseThrow(()-> new IllegalArgumentException("No existe el rol"));
-        UserEntity userEntity = new UserEntity();
-
-        // Si el dominio ya trae un ID asignado, se lo pasamos a la entidad
-        if ( user.getId() != null ) {
-            userEntity.setId(user.getId());
-        }
-
-        userEntity.setUsername(user.getUsername());
-        userEntity.setEmail(user.getEmail());
-        userEntity.setPassword(user.getPassword());
-        userEntity.setRefreshTokenHash(user.getRefreshTokenHash());
-        userEntity.setRequirePasswordChange(user.getRequirePasswordChange());
-        userEntity.setRole(roleEntity);
-
-        if ( user.getStatus() != null ) {
-            userEntity.setStatus(user.getStatus());
-        }
-
-        UserEntity saved = userJpaRepository.save(userEntity);
-
+        UserEntity entity = mapToEntity(user);
+        UserEntity saved = userJpaRepository.save(entity);
         return mapToDomain(saved);
+    }
+
+    private UserEntity mapToEntity(User user) {
+        if ( user == null ) return null;
+        RoleEntity roleEntity = null;
+        if ( user.getRoleId() != null ) {
+            roleEntity = roleJpaRepository.findById(user.getRoleId()).orElseThrow(() -> new IllegalArgumentException("No existe rol"));
+        }
+        UserEntity entity = new UserEntity(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getPassword(),
+            user.getRefreshTokenHash(),
+            user.getRequirePasswordChange(),
+            roleEntity
+        );
+
+        // Campos heredados
+        if ( user.getStatus() != null ) {
+            entity.setStatus(user.getStatus());
+        }
+        entity.setCreatedAt(user.getCreatedAt());
+        entity.setUpdatedAt(user.getUpdatedAt());
+
+        return entity;
     }
 
     @Override
@@ -55,9 +62,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     private User mapToDomain(UserEntity entity) {
         
-        if ( entity == null ) {
-            return null;
-        }
+        if ( entity == null ) return null;
 
         UUID roleId = ( entity.getRole() != null ) ? entity.getRole().getId(): null;
 
@@ -70,6 +75,8 @@ public class UserRepositoryImpl implements UserRepository {
         domain.setRequirePasswordChange(entity.getRequirePasswordChange());
         domain.setRoleId(roleId);
         domain.setStatus(entity.getStatus());
+        domain.setCreatedAt(entity.getCreatedAt());
+        domain.setUpdatedAt(entity.getUpdatedAt());
         
         return domain;
     }
@@ -91,19 +98,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User update(User user) {
-        RoleEntity roleEntity = roleJpaRepository.findById(user.getRoleId()).orElseThrow(() -> new IllegalArgumentException("No existe el role"));
-        UserEntity userEntity = userJpaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
-
-        userEntity.setUsername(user.getUsername());
-        userEntity.setEmail(user.getEmail());
-        userEntity.setPassword(user.getPassword());
-        userEntity.setRole(roleEntity);
-        userEntity.setRefreshTokenHash(user.getRefreshTokenHash());
-        userEntity.setRequirePasswordChange(user.getRequirePasswordChange());
-        userEntity.setStatus(user.getStatus());
-
-        UserEntity updated = userJpaRepository.save(userEntity);
-
+        UserEntity entity = mapToEntity(user);
+        UserEntity updated = userJpaRepository.save(entity);
         return mapToDomain(updated);
     }
 

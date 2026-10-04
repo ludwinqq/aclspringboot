@@ -79,15 +79,11 @@ public class RoleRepositoryImpl implements RoleRepository {
      * hacia la Capa de Dominio, asegurando que las fechas y estados nunca se queden en null.
      */
     private Role mapToDomain(RoleEntity entity) {
-        /*Role domain = new Role();
-        domain.setId(entity.getId());
-        domain.setName(entity.getName());
-        domain.setDescription(entity.getDescription());
-        domain.setStatus(entity.getStatus());
-        return domain;*/
+
         if (entity == null) {
             return null;
         }
+        
         return new Role(
             entity.getId(),
             entity.getName(),

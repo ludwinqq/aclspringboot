@@ -16,10 +16,13 @@ public class UpdateRoleUseCase {
         this.repository = repository;
     }
 
-    public Role execute(Role roleInput) {
-        Role existingRole = repository.findById(roleInput.getId()).orElseThrow(() -> new IllegalArgumentException("El rol Id " + roleInput.getId() + " no existe"));
+    public Role execute(UUID id, Role roleInput) {
+        Role existingRole = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("El rol Id " + roleInput.getId() + " no existe"));
+        existingRole.updateDetails(roleInput.getName(), roleInput.getDescription());
+        
         existingRole.setName(roleInput.getName());
         existingRole.setDescription(roleInput.getDescription());
+        
         return repository.update(existingRole);
     }
 }

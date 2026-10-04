@@ -29,6 +29,15 @@ public class Role {
         this.updatedAt = updatedAt;
     }
 
+    public void updateDetails(String name, String description) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        if (description != null) {
+            this.description = description;
+        }
+    }
+
     public UUID getId() {
         return id;
     }
