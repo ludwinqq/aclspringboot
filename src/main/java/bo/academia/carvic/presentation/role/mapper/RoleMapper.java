@@ -7,7 +7,7 @@ import bo.academia.carvic.presentation.role.dto.CreateRoleRequestDto;
 import bo.academia.carvic.presentation.role.dto.RoleResponseDto;
 import bo.academia.carvic.presentation.role.dto.UpdateRoleRequestDto;
 
-@Component 
+@Component ("presentationRoleMapper")
 public class RoleMapper {
 
     // Mapea DTO de Creación a Dominio
