@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 
 @Entity 
 @Table (name = "users")
-public class UserEntity extends BaseAuditableData {
+public class UserEntity extends BaseAuditableData{
 
     @Id 
     @GeneratedValue (strategy = GenerationType.UUID)
@@ -52,7 +52,7 @@ public class UserEntity extends BaseAuditableData {
     @Column (
         name = "require_password_change"
     )
-    private Boolean requirePasswordChange;
+    private Boolean requirePasswordChange = true;
 
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn (name = "role_id", nullable = false)
@@ -127,5 +127,5 @@ public class UserEntity extends BaseAuditableData {
     public void setRole(RoleEntity role) {
         this.role = role;
     }
-
+    
 }

@@ -1,35 +1,30 @@
-package bo.academia.carvic.domain.user;
+package bo.academia.carvic.presentation.user.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class User {
+
+public class UserResponseDto {
 
     private UUID id;
     private String username;
     private String email;
-    private String password;
-    private String refreshTokenHash;
-    private Boolean requirePasswordChange = true;
+    private Integer status;
     private UUID roleId;
-    private Integer status = 1;
+    //private RoleResponseDto role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
-    public User() {
+    public UserResponseDto() {
     }
 
-    public User(UUID id, String username, String email, String password, String refreshTokenHash,
-            Boolean requirePasswordChange, UUID roleId, Integer status, LocalDateTime createdAt,
+    public UserResponseDto(UUID id, String username, String email, Integer status, UUID roleId, LocalDateTime createdAt,
             LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
-        this.refreshTokenHash = refreshTokenHash;
-        this.requirePasswordChange = requirePasswordChange;
-        this.roleId = roleId;
         this.status = status;
+        this.roleId = roleId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -58,28 +53,12 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRefreshTokenHash() {
-        return refreshTokenHash;
-    }
-
-    public void setRefreshTokenHash(String refreshTokenHash) {
-        this.refreshTokenHash = refreshTokenHash;
-    }
-
-    public Boolean getRequirePasswordChange() {
-        return requirePasswordChange;
-    }
-
-    public void setRequirePasswordChange(Boolean requirePasswordChange) {
-        this.requirePasswordChange = requirePasswordChange;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public UUID getRoleId() {
@@ -88,14 +67,6 @@ public class User {
 
     public void setRoleId(UUID roleId) {
         this.roleId = roleId;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {
