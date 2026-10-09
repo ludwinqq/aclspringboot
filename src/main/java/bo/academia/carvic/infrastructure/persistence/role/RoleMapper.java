@@ -35,15 +35,16 @@ public class RoleMapper {
                 return new RolePermissionRule(permission, itemEntity.getPermitted());
             })
             .collect(Collectors.toList());
-        return new Role(
-            entity.getId(),
-            entity.getName(),
-            entity.getDescription(),
-            entity.getStatus(),
-            entity.getCreatedAt(),
-            entity.getUpdatedAt(),
-            domainRules
-        );
+        
+        Role role = new Role();
+        role.setId(entity.getId());
+        role.setName(entity.getName());
+        role.setDescription(entity.getDescription());
+        role.setStatus(entity.getStatus());
+        role.setCreatedAt(entity.getCreatedAt());
+        role.setUpdatedAt(entity.getUpdatedAt());
+        role.setPermissionRules(domainRules);
+        return role;
     }
 
     //2. Convertir de dominio (Negocio) a JPA Entity (BD)

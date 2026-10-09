@@ -3,38 +3,27 @@ package bo.academia.carvic.presentation.user.dto;
 import java.util.List;
 import java.util.UUID;
 
-public class UserResponseDto {
+public class UserResponse {
     private UUID id;
     private String username;
     private String email;
     private UUID roleId;
-    private Integer status;
     private List<CustomRuleDto> customPermissions;
 
-    public UserResponseDto() {}
-
-    public UserResponseDto(UUID id, String username, String email, UUID roleId, Integer status, List<CustomRuleDto> customPermissions) {
+    public UserResponse(UUID id, String username, String email, UUID roleId, List<CustomRuleDto> customPermissions) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.roleId = roleId;
-        this.status = status;
         this.customPermissions = customPermissions;
     }
 
-    // Getters y Setters
+    // Getters...
     public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
     public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
     public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
     public UUID getRoleId() { return roleId; }
-    public void setRoleId(UUID roleId) { this.roleId = roleId; }
-    public Integer getStatus() { return status; }
-    public void setStatus(Integer status) { this.status = status; }
     public List<CustomRuleDto> getCustomPermissions() { return customPermissions; }
-    public void setCustomPermissions(List<CustomRuleDto> customPermissions) { this.customPermissions = customPermissions; }
 
     public static class CustomRuleDto {
         private UUID permissionId;
@@ -46,12 +35,8 @@ public class UserResponseDto {
             this.permissionName = permissionName;
             this.permitted = permitted;
         }
-
         public UUID getPermissionId() { return permissionId; }
-        public void setPermissionId(UUID permissionId) { this.permissionId = permissionId; }
         public String getPermissionName() { return permissionName; }
-        public void setPermissionName(String permissionName) { this.permissionName = permissionName; }
         public Boolean getPermitted() { return permitted; }
-        public void setPermitted(Boolean permitted) { this.permitted = permitted; }
     }
 }

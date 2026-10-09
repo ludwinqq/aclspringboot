@@ -1,9 +1,13 @@
 package bo.academia.carvic.infrastructure.persistence.user;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import bo.academia.carvic.infrastructure.persistence.BaseAuditableData;
+import bo.academia.carvic.infrastructure.persistence.permission.PermissionEntity;
 import bo.academia.carvic.infrastructure.persistence.role.RoleEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity 
@@ -58,6 +63,9 @@ public class UserEntity extends BaseAuditableData{
     @JoinColumn (name = "role_id", nullable = false)
     private RoleEntity role;
 
+    @OneToMany (mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPermissionEntity> permissions = new ArrayList<>();
+
     public UserEntity() {
     }
 
@@ -70,6 +78,14 @@ public class UserEntity extends BaseAuditableData{
         this.refreshTokenHash = refreshTokenHash;
         this.requirePasswordChange = requirePasswordChange;
         this.role = role;
+    }
+
+    public void syncPermissions(List<UserPermissionEntity> newPermissions) {
+        this.permissions.clear();
+        if ( newPermissions != null ) {
+            newPermissions.forEach(p -> p.setUser(this));
+            this.permissions.addAll(newPermissions);
+        }
     }
 
     public UUID getId() {
@@ -128,4 +144,7 @@ public class UserEntity extends BaseAuditableData{
         this.role = role;
     }
     
+    public List<UserPermissionEntity> getPermissions() { return permissions; }
+    public void setPermissions(List<UserPermissionEntity> permissions) { this.permissions = permissions; }
+
 }

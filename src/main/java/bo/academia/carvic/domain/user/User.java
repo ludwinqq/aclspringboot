@@ -1,6 +1,8 @@
 package bo.academia.carvic.domain.user;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class User {
@@ -15,23 +17,59 @@ public class User {
     private Integer status = 1;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<UserPermissionRule> permissionRules = new ArrayList<>();
     
     public User() {
     }
 
-    public User(UUID id, String username, String email, String password, String refreshTokenHash,
-            Boolean requirePasswordChange, UUID roleId, Integer status, LocalDateTime createdAt,
-            LocalDateTime updatedAt) {
-        this.id = id;
+    public User(String username, String email, String password, String refreshTokenHash, UUID roleId, List<UserPermissionRule> permissionRules) {
+        
+        if ( username == null || username.isBlank() ) {
+            throw new IllegalArgumentException("Es requisito username");
+        }
+
+        if ( email == null || email.isBlank() ) {
+            throw new IllegalArgumentException("Es requisito email");
+        }
+
+        if ( password == null ) {
+            throw new IllegalArgumentException("El password es requisito");
+        }
+
         this.username = username;
         this.email = email;
         this.password = password;
         this.refreshTokenHash = refreshTokenHash;
-        this.requirePasswordChange = requirePasswordChange;
         this.roleId = roleId;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+
+        if ( permissionRules != null ) {
+            this.permissionRules = permissionRules;
+        }
+    }
+
+    // NUEVO: Constructor para Reconstrucción desde la Base de Datos (Mappers)
+    public User(UUID id, String username, String email, String password, String refreshTokenHash, 
+                UUID roleId, List<UserPermissionRule> permissionRules) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roleId = roleId;
+        if (permissionRules != null) {
+            this.permissionRules = permissionRules;
+        }
+    }
+
+    public void updatePermission(List<UserPermissionRule> newRules) {
+        this.permissionRules = newRules;
+    }
+
+    public boolean hasAccess(String permissionName) {
+        return this.permissionRules.stream()
+                .filter(rule -> rule.getPermission().getName().equals(permissionName))
+                .findFirst()
+                .map(UserPermissionRule::isPermitted)
+                .orElse(false);
     }
 
     public UUID getId() {
@@ -112,6 +150,14 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<UserPermissionRule> getPermissionRules() {
+        return permissionRules;
+    }
+
+    public void setPermissionRules(List<UserPermissionRule> permissionRules) {
+        this.permissionRules = permissionRules;
     }
 
 }

@@ -19,18 +19,14 @@ public class Role {
     public Role() {
     }
 
-    public Role(UUID id, String name, String description, Integer status, LocalDateTime createdAt, LocalDateTime updatedAt, List<RolePermissionRule> permissionRules) {
+    public Role(String name, String description, List<RolePermissionRule> permissionRules) {
 
         if ( name == null || name.isBlank() ) {
             throw new IllegalArgumentException("Nombre es requerido");
         }
         
-        this.id = id;
         this.name = name;
         this.description = description;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         
         if (permissionRules != null ) {
             this.permissionRules = permissionRules;
@@ -103,5 +99,12 @@ public class Role {
 
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
-    public List<RolePermissionRule> getPermissionRules() { return permissionRules; }
+    public List<RolePermissionRule> getPermissionRules() {
+        return permissionRules;
+    }
+
+    public void setPermissionRules(List<RolePermissionRule> permissionRules) {
+        this.permissionRules = permissionRules;
+    }
+    
 }

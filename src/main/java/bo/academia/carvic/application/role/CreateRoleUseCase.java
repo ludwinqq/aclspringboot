@@ -25,7 +25,10 @@ public class CreateRoleUseCase {
 
     public Role execute(String name, String description, List<RolePermissionRequest> permissionRequests) {
         // Creamos la instancia de dominio base
-        Role newRole = new Role(null, name, description, 1, null, null, null);
+        Role newRole = new Role();
+        newRole.setName(name);
+        newRole.setDescription(description);
+        //(null, name, description, 1, null, null, null);
 
         // Si se envían permisos en la creación, los procesamos de la misma manera
         if (permissionRequests != null) {

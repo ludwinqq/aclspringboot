@@ -6,15 +6,11 @@ import bo.academia.carvic.application.role.FindByNameRoleUseCase;
 import bo.academia.carvic.application.role.UpdateRoleUseCase;
 import bo.academia.carvic.application.role.FindByIdRoleUseCase;
 import bo.academia.carvic.domain.role.Role;
-import bo.academia.carvic.infrastructure.persistence.role.RoleEntity;
 import bo.academia.carvic.presentation.role.dto.RoleRequest;
-import bo.academia.carvic.presentation.role.dto.RoleResponse;
 import bo.academia.carvic.presentation.role.dto.RoleResponseDto;
 import bo.academia.carvic.presentation.role.mapper.RoleMapper;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -58,7 +53,6 @@ public class RoleController {
                 request.getPermissions()
         );
         return roleMapper.toResponse(role);
-        //return ResponseEntity.status(HttpStatus.CREATED).body(new RoleResponse(role));
     }
 
     @PutMapping("/{id}")
@@ -70,13 +64,10 @@ public class RoleController {
                 request.getPermissions()
         );
         return roleMapper.toResponse(updatedRole);
-        //return ResponseEntity.ok(new RoleResponse(updatedRole));
     }
 
     @GetMapping("/{id}")
     public RoleResponseDto findById(@PathVariable UUID id) {
-        //Role role = findByIdRoleUseCase.execute(id);
-        //return ResponseEntity.ok(new RoleResponse(role));
         return roleMapper.toResponse(findByIdRoleUseCase.execute(id));
     }
 

@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import bo.academia.carvic.domain.user.User;
 import bo.academia.carvic.domain.user.UserRepository;
@@ -16,91 +17,68 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
     private final RoleJpaRepository roleJpaRepository;
+    private final UserMapper userMapper;
     
-    public UserRepositoryImpl(UserJpaRepository userJpaRepository, RoleJpaRepository roleJpaRepository) {
+    public UserRepositoryImpl(UserJpaRepository userJpaRepository, RoleJpaRepository roleJpaRepository, UserMapper userMapper, UserMapper userMapper_1) {
         this.userJpaRepository = userJpaRepository;
         this.roleJpaRepository = roleJpaRepository;
+        this.userMapper = userMapper;
+
     }
 
     @Override
+    @Transactional
     public User save(User user) {
-        UserEntity entity = mapToEntity(user);
+        UserEntity entity = userMapper.toEntity(user);
         UserEntity saved = userJpaRepository.save(entity);
-        return mapToDomain(saved);
-    }
-
-    private UserEntity mapToEntity(User user) {
-        if ( user == null ) return null;
-        RoleEntity roleEntity = null;
-        if ( user.getRoleId() != null ) {
-            roleEntity = roleJpaRepository.findById(user.getRoleId()).orElseThrow(() -> new IllegalArgumentException("No existe rol"));
-        }
-        UserEntity entity = new UserEntity(
-            user.getId(),
-            user.getUsername(),
-            user.getEmail(),
-            user.getPassword(),
-            user.getRefreshTokenHash(),
-            user.getRequirePasswordChange(),
-            roleEntity
-        );
-
-        // Campos heredados
-        if ( user.getStatus() != null ) {
-            entity.setStatus(user.getStatus());
-        }
-        entity.setCreatedAt(user.getCreatedAt());
-        entity.setUpdatedAt(user.getUpdatedAt());
-
-        return entity;
+        return userMapper.toDomain(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findById(UUID id) {
-        return userJpaRepository.findById(id).map(this::mapToDomain);
-    }
-
-    private User mapToDomain(UserEntity entity) {
-        
-        if ( entity == null ) return null;
-
-        UUID roleId = ( entity.getRole() != null ) ? entity.getRole().getId(): null;
-
-        User domain = new User();
-        domain.setId(entity.getId());
-        domain.setUsername(entity.getUsername());
-        domain.setEmail(entity.getEmail());
-        domain.setPassword(entity.getPassword());
-        domain.setRefreshTokenHash(entity.getRefreshTokenHash());
-        domain.setRequirePasswordChange(entity.getRequirePasswordChange());
-        domain.setRoleId(roleId);
-        domain.setStatus(entity.getStatus());
-        domain.setCreatedAt(entity.getCreatedAt());
-        domain.setUpdatedAt(entity.getUpdatedAt());
-        
-        return domain;
+        return userJpaRepository.findById(id).map(userMapper::toDomain);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findByUsername(String username) {
-        return userJpaRepository.findByUsername(username).map(this::mapToDomain);
+        return userJpaRepository.findByUsername(username).map(userMapper::toDomain);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email).map(this::mapToDomain);
+        return userJpaRepository.findByEmail(email).map(userMapper::toDomain);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> findAll() {
-        return  userJpaRepository.findAll().stream().map(this::mapToDomain).toList();
+        return  userJpaRepository.findAll().stream().map(userMapper::toDomain).toList();
     }
 
     @Override
     public User update(User user) {
-        UserEntity entity = mapToEntity(user);
-        UserEntity updated = userJpaRepository.save(entity);
-        return mapToDomain(updated);
+        UserEntity existing = userJpaRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + user.getId()));
+        
+        existing.setUsername(user.getUsername());
+        existing.setEmail(user.getEmail());
+        existing.setPassword(user.getPassword());
+        existing.setStatus(user.getStatus());
+        existing.setRequirePasswordChange(user.getRequirePasswordChange());
+        existing.setRefreshTokenHash(user.getRefreshTokenHash());
+
+        RoleEntity roleRef = new RoleEntity();
+        roleRef.setId(user.getRoleId());
+        existing.setRole(roleRef);
+
+        UserEntity state = userMapper.toEntity(user);
+        existing.syncPermissions(state.getPermissions());
+
+        UserEntity saved = userJpaRepository.save(existing);
+        return userMapper.toDomain(saved);
     }
 
 }
