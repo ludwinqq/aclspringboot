@@ -11,21 +11,22 @@ public class UserMapper {
     public UserResponseDto toResponse(User user) {
         if (user == null) return null;
 
+        // CORREGIDO: Se cambió el tipo de List<UserResponseDto> a List<UserResponseDto.CustomRuleDto>
         List<UserResponseDto.CustomRuleDto> customRules = user.getPermissionRules().stream()
                 .map(r -> new UserResponseDto.CustomRuleDto(
                         r.getPermission().getId(), 
                         r.getPermission().getName(), 
-                        r.isPermitted()
+                        r.getStrategy() // Mapea directamente el AclStrategy (Enum)
                 ))
                 .toList();
 
-        return new UserResponseDto(
-                user.getId(), 
-                user.getUsername(), 
-                user.getEmail(), 
-                user.getRoleId(), 
-                user.getStatus(), 
-                customRules
-        );
+        UserResponseDto userDto = new UserResponseDto();
+        userDto.setId(user.getId());
+        userDto.setUsername(user.getUsername());
+        userDto.setEmail(user.getEmail());
+        userDto.setRoleId(user.getRoleId());
+        userDto.setStatus(user.getStatus());
+        userDto.setCustomPermissions(customRules);
+        return userDto;
     }
 }

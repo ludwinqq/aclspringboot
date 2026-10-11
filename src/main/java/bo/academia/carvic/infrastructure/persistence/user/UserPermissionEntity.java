@@ -2,9 +2,12 @@ package bo.academia.carvic.infrastructure.persistence.user;
 
 import java.util.UUID;
 
+import bo.academia.carvic.domain.user.AclStrategy;
 import bo.academia.carvic.infrastructure.persistence.permission.PermissionEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,16 +32,19 @@ public class UserPermissionEntity {
     @JoinColumn (name = "permission_id", nullable = false)
     private PermissionEntity permission;
 
-    @Column (name = "permitted", nullable = false)
-    private Boolean permitted;
+    //@Column (name = "permitted", nullable = false)
+    //private Boolean permitted;
+    @Enumerated (EnumType.STRING)
+    @Column(name = "strategy", nullable = false, length = 30)
+    private AclStrategy strategy;
 
     public UserPermissionEntity() {
     }
 
-    public UserPermissionEntity(UserEntity user, PermissionEntity permission, Boolean permitted) {
+    public UserPermissionEntity(UserEntity user, PermissionEntity permission, AclStrategy strategy) {
         this.user = user;
         this.permission = permission;
-        this.permitted = permitted;
+        this.strategy = strategy;
     }
 
     public UUID getId() { return id; }
@@ -63,12 +69,7 @@ public class UserPermissionEntity {
         this.permission = permission;
     }
 
-    public Boolean getPermitted() {
-        return permitted;
-    }
-
-    public void setPermitted(Boolean permitted) {
-        this.permitted = permitted;
-    }
+    public AclStrategy getStrategy() { return strategy; }
+    public void setStrategy(AclStrategy strategy) { this.strategy = strategy; }
     
 }

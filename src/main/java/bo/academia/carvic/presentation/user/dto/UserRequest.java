@@ -9,9 +9,11 @@ public class UserRequest {
     private String email;
     private String password;
     private UUID roleId;
+    private String refreshTokenHash;
     private List<UserPermissionRequest> permissions;
 
     // Getters y Setters
+    
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
     public String getEmail() { return email; }
@@ -22,4 +24,10 @@ public class UserRequest {
     public void setRoleId(UUID roleId) { this.roleId = roleId; }
     public List<UserPermissionRequest> getPermissions() { return permissions; }
     public void setPermissions(List<UserPermissionRequest> permissions) { this.permissions = permissions; }
+    public String getRefreshTokenHash() {
+        return refreshTokenHash;
+    }
+    public void setRefreshTokenHash(String refreshTokenHash) {
+        this.refreshTokenHash = refreshTokenHash;
+    }
 }

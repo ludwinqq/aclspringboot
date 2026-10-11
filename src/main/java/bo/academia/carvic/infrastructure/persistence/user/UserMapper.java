@@ -24,7 +24,7 @@ public class UserMapper {
                             pEntity.getDescription(), pEntity.getModule(),
                             entity.getStatus(), entity.getCreatedAt(), entity.getUpdatedAt()
                     );
-                    return new UserPermissionRule(permission, p.getPermitted());
+                    return new UserPermissionRule(permission, p.getStrategy());
                 })
                 .collect(Collectors.toList());
         User user = new User();
@@ -62,7 +62,7 @@ public class UserMapper {
                 .map(rule -> {
                     PermissionEntity pEntity = new PermissionEntity();
                     pEntity.setId(rule.getPermission().getId());
-                    return new UserPermissionEntity(entity, pEntity, rule.isPermitted());
+                    return new UserPermissionEntity(entity, pEntity, rule.getStrategy());
                 })
                 .collect(Collectors.toList());
 

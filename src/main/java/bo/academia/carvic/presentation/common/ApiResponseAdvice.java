@@ -14,8 +14,8 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        // Evita volver a envolver si ya es un ApiResponse o un ResponseEntity
-        return true; 
+        // CORREGIDO: Si el método del controlador ya declara que devuelve un ApiResponse, no lo interceptes
+        return !returnType.getParameterType().isAssignableFrom(ApiResponse.class);
     }
 
     @Override
@@ -23,16 +23,23 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
                                   Class<? extends HttpMessageConverter<?>> selectedContentTypeHeader,
                                   ServerHttpRequest request, ServerHttpResponse response) {
         
-        // Si ya viene envuelto, no hacemos nada
+        // CORREGIDO: Validación doble infalible. Si el cuerpo ya es un ApiResponse, lo deja pasar intacto
         if (body instanceof ApiResponse) {
             return body;
         }
 
-        // Obtenemos el código HTTP actual (ej. 200, 201) desde la respuesta del servidor
+        // Obtener el código HTTP real configurado en el Servlet
         int statusCode = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
+        
+        // CORREGIDO: Si el código es un error (400 o superior) y el cuerpo ya contiene datos estructurados, 
+        // significa que viene del GlobalExceptionHandler. ¡No debemos volver a envolverlo en un success!
+        if (statusCode >= 400) {
+            return body; 
+        }
+
         String codeDescription = statusCode + " " + getStatusDescription(statusCode);
 
-        // Devolvemos tu estructura con el código integrado
+        // Devolvemos tu estructura con el código integrado para flujos exitosos (200, 201)
         return ApiResponse.success("Operación exitosa", codeDescription, body);
     }
 
