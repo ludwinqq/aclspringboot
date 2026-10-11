@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bo.academia.carvic.application.permission.CreatePermissionUseCase;
@@ -16,6 +17,8 @@ import bo.academia.carvic.application.permission.FindAllPermissionUseCase;
 import bo.academia.carvic.application.permission.FindByIdPermissionUseCase;
 import bo.academia.carvic.application.permission.FindByNamePermissionUseCase;
 import bo.academia.carvic.application.permission.UpdatePermissionUseCase;
+import bo.academia.carvic.application.permission.dto.PermissionListResponse;
+import bo.academia.carvic.domain.common.PagedResult;
 import bo.academia.carvic.domain.permission.Permission;
 import bo.academia.carvic.presentation.permission.dto.CreatePermissionDto;
 import bo.academia.carvic.presentation.permission.dto.ReponsePermissionDto;
@@ -60,9 +63,11 @@ public class PermissionController {
         return permissionMapper.toResponse(update);
     }
 
-    @GetMapping 
-    public List<ReponsePermissionDto> getAll() {
-        return findAllPermissionUseCase.execute().stream().map(permissionMapper::toResponse).toList();
+    @GetMapping
+    public PagedResult<PermissionListResponse> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return findAllPermissionUseCase.execute(page, size);
     }
 
     @GetMapping ("/{id}")

@@ -82,10 +82,12 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponseDto> findAll() {
-        return findAllUserUseCase.execute().stream()
-                .map(userMapper::toResponse)
-                .toList();
+    public bo.academia.carvic.domain.common.PagedResult<UserListSummaryResponse> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        // El controlador retorna directamente el PagedResult envuelto por tu ApiResponseAdvice de forma automática
+        return findAllUserUseCase.execute(page, size);
     }
 
     // =========================================================================

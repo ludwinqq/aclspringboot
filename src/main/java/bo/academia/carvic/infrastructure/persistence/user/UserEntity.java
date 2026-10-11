@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import bo.academia.carvic.infrastructure.persistence.BaseAuditableData;
-import bo.academia.carvic.infrastructure.persistence.permission.PermissionEntity;
 import bo.academia.carvic.infrastructure.persistence.role.RoleEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

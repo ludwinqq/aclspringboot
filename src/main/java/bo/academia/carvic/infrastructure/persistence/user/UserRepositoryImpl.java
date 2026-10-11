@@ -19,11 +19,10 @@ public class UserRepositoryImpl implements UserRepository {
     private final RoleJpaRepository roleJpaRepository;
     private final UserMapper userMapper;
     
-    public UserRepositoryImpl(UserJpaRepository userJpaRepository, RoleJpaRepository roleJpaRepository, UserMapper userMapper, UserMapper userMapper_1) {
+    public UserRepositoryImpl(UserJpaRepository userJpaRepository, RoleJpaRepository roleJpaRepository, UserMapper userMapper) {
         this.userJpaRepository = userJpaRepository;
         this.roleJpaRepository = roleJpaRepository;
         this.userMapper = userMapper;
-
     }
 
     @Override

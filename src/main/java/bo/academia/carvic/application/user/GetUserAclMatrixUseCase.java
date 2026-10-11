@@ -23,13 +23,26 @@ public class GetUserAclMatrixUseCase {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
 
-    public GetUserAclMatrixUseCase(UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository) {
+    private final UserQueryService userQueryService;
+
+    public GetUserAclMatrixUseCase(
+        UserRepository userRepository, 
+        RoleRepository roleRepository, 
+        PermissionRepository permissionRepository, 
+        UserQueryService userQueryService
+    ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
+        this.userQueryService = userQueryService;
     }
 
-    @Transactional(readOnly = true)
+    public List<AclMatrixRowResponse> execute(UUID userId) {
+        // Ejecuta la consulta optimizada de lectura
+        return userQueryService.getUserAclMatrix(userId);
+    }
+
+    /*@Transactional(readOnly = true)
     public List<AclMatrixRowResponse> execute(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Usuario inexistente"));
         Role role = roleRepository.findById(user.getRoleId()).orElseThrow(() -> new IllegalArgumentException("Rol inexistente"));
@@ -60,5 +73,5 @@ public class GetUserAclMatrixUseCase {
                     calculatedStrategy
             );
         }).toList();
-    }
+    }*/
 }

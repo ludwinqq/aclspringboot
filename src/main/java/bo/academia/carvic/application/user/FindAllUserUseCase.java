@@ -1,20 +1,20 @@
 package bo.academia.carvic.application.user;
 
-import java.util.List;
 import org.springframework.stereotype.Service;
-import bo.academia.carvic.domain.user.User;
-import bo.academia.carvic.domain.user.UserRepository;
+import bo.academia.carvic.application.user.dto.UserListSummaryResponse;
+import bo.academia.carvic.domain.common.PagedResult;
 
 @Service
 public class FindAllUserUseCase {
 
-    private final UserRepository repository;
+    private final UserQueryService userQueryService;
 
-    public FindAllUserUseCase(UserRepository repository) {
-        this.repository = repository;
+    public FindAllUserUseCase(UserQueryService userQueryService) {
+        this.userQueryService = userQueryService;
     }
 
-    public List<User> execute() {
-        return repository.findAll();
+    public PagedResult<UserListSummaryResponse> execute(int page, int size) {
+        // Ejecuta el flujo de lectura controlado
+        return userQueryService.getPagedUsers(page, size);
     }
 }

@@ -22,4 +22,6 @@ public class UserPermissionRule {
     public Permission getPermission() { return permission; }
     public AclStrategy getStrategy() { return strategy; }
 
+    
+    
 }

@@ -11,5 +11,4 @@ public interface PermissionRepository {
     List<Permission> findAll();
     Optional<Permission> findById(UUID id);
     Optional<Permission> findByName(String name);
-    
 }

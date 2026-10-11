@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
-
 import bo.academia.carvic.domain.permission.Permission;
 import bo.academia.carvic.domain.permission.PermissionRepository;
 
@@ -13,7 +12,7 @@ import bo.academia.carvic.domain.permission.PermissionRepository;
 public class PermissionRepositoryImpl implements PermissionRepository {
 
     private PermissionJpaRepository repository;
-
+ 
     public PermissionRepositoryImpl(PermissionJpaRepository repository) {
         this.repository = repository;
     }
