@@ -18,6 +18,7 @@ import bo.academia.carvic.application.permission.FindByIdPermissionUseCase;
 import bo.academia.carvic.application.permission.FindByNamePermissionUseCase;
 import bo.academia.carvic.application.permission.UpdatePermissionUseCase;
 import bo.academia.carvic.application.permission.dto.PermissionListResponse;
+import bo.academia.carvic.application.permission.dto.PermissionProjection;
 import bo.academia.carvic.domain.common.PagedResult;
 import bo.academia.carvic.domain.permission.Permission;
 import bo.academia.carvic.presentation.permission.dto.CreatePermissionDto;
@@ -64,7 +65,7 @@ public class PermissionController {
     }
 
     @GetMapping
-    public PagedResult<PermissionListResponse> findAll(
+    public PagedResult<PermissionProjection> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return findAllPermissionUseCase.execute(page, size);

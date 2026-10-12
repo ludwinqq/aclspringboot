@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import bo.academia.carvic.application.user.*;
 import bo.academia.carvic.application.user.dto.*;
+import bo.academia.carvic.domain.common.PagedResult;
 import bo.academia.carvic.domain.user.User;
 import bo.academia.carvic.presentation.user.dto.UserRequest;
 import bo.academia.carvic.presentation.user.dto.UserResponseDto;
@@ -82,7 +83,7 @@ public class UserController {
     }
 
     @GetMapping
-    public bo.academia.carvic.domain.common.PagedResult<UserListSummaryResponse> findAll(
+    public PagedResult<UserProjection> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         

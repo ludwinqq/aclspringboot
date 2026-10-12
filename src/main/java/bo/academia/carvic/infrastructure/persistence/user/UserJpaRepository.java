@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +18,10 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByUsername(String username);
     Optional<UserEntity> findByEmail(String email);
 
-    // Agrega este método a tu UserJpaRepository actual:
+    @Query("SELECT u.id AS id, u.username AS username, u.email AS email, u.status AS status, r.name AS roleName " +
+        "FROM UserEntity u JOIN u.role r")
+    Page<bo.academia.carvic.application.user.dto.UserProjection> fetchPagedUsers(Pageable pageable);
+
 
     @Query("SELECT new bo.academia.carvic.application.user.dto.UserListSummaryResponse(" +
         "u.id, u.username, u.email, r.name, u.status) " +
