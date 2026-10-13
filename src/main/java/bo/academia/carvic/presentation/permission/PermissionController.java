@@ -2,6 +2,7 @@ package bo.academia.carvic.presentation.permission;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +17,9 @@ import bo.academia.carvic.application.permission.CreatePermissionUseCase;
 import bo.academia.carvic.application.permission.FindAllPermissionUseCase;
 import bo.academia.carvic.application.permission.FindByIdPermissionUseCase;
 import bo.academia.carvic.application.permission.FindByNamePermissionUseCase;
+import bo.academia.carvic.application.permission.GetPagedPermissionsUseCase;
 import bo.academia.carvic.application.permission.UpdatePermissionUseCase;
-import bo.academia.carvic.application.permission.dto.PermissionListResponse;
-import bo.academia.carvic.application.permission.dto.PermissionProjection;
-import bo.academia.carvic.domain.common.PagedResult;
+import bo.academia.carvic.domain.common.helpers.pagination.PageResponse;
 import bo.academia.carvic.domain.permission.Permission;
 import bo.academia.carvic.presentation.permission.dto.CreatePermissionDto;
 import bo.academia.carvic.presentation.permission.dto.ReponsePermissionDto;
@@ -34,20 +34,26 @@ public class PermissionController {
     private final CreatePermissionUseCase createPermissionUseCase;
     private final UpdatePermissionUseCase updatePermissionUseCase;
     private final FindAllPermissionUseCase findAllPermissionUseCase;
+    private final GetPagedPermissionsUseCase getPagedPermissionsUseCase;
     private final FindByIdPermissionUseCase findByIdPermissionUseCase;
     private final FindByNamePermissionUseCase findByNamePermissionUseCase;
     private final PermissionMapper permissionMapper;
     
-    public PermissionController(CreatePermissionUseCase createPermissionUseCase,
-            UpdatePermissionUseCase updatePermissionUseCase, FindAllPermissionUseCase findAllPermissionUseCase,
-            FindByIdPermissionUseCase findByIdPermissionUseCase,
-            FindByNamePermissionUseCase findByNamePermissionUseCase, PermissionMapper permissionMapper) {
+    public PermissionController(
+        CreatePermissionUseCase createPermissionUseCase,
+        UpdatePermissionUseCase updatePermissionUseCase,
+        FindAllPermissionUseCase findAllPermissionUseCase,
+        FindByIdPermissionUseCase findByIdPermissionUseCase,
+        FindByNamePermissionUseCase findByNamePermissionUseCase,
+        PermissionMapper permissionMapper,
+        GetPagedPermissionsUseCase getPagedPermissionsUseCase) {
         this.createPermissionUseCase = createPermissionUseCase;
         this.updatePermissionUseCase = updatePermissionUseCase;
         this.findAllPermissionUseCase = findAllPermissionUseCase;
         this.findByIdPermissionUseCase = findByIdPermissionUseCase;
         this.findByNamePermissionUseCase = findByNamePermissionUseCase;
         this.permissionMapper = permissionMapper;
+        this.getPagedPermissionsUseCase = getPagedPermissionsUseCase;
     }
 
     @PostMapping 
@@ -64,12 +70,35 @@ public class PermissionController {
         return permissionMapper.toResponse(update);
     }
 
-    @GetMapping
+    @GetMapping 
+    public PageResponse<ReponsePermissionDto> getAllPaged(
+        @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "ASC") String direction ) {
+
+        // 1. Ejecutas el caso de uso que te devuelve la página envuelta en entidades de dominio (o DTOs, según prefieras)
+        PageResponse<Permission> permissionPage = getPagedPermissionsUseCase.execute(page, size, sortBy, direction);
+        // 2. Mapear la lista interna de entidades a PermissionResponseDto manteniendo la paginación
+        List<ReponsePermissionDto> responseDtos = permissionPage.getContent().stream()
+                    .map(permissionMapper::toResponse)
+                    .collect(Collectors.toList());
+        // 3. Retornas la respuesta paginada con los DTOs de respuesta
+        return new PageResponse<>(
+            responseDtos,
+            permissionPage.getCurrentPage(),
+            permissionPage.getTotalPages(),
+            permissionPage.getTotalElements(),
+            permissionPage.getPageSize()
+        );
+
+    }
+    /*@GetMapping
     public PagedResult<PermissionProjection> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return findAllPermissionUseCase.execute(page, size);
-    }
+    }*/
 
     @GetMapping ("/{id}")
     public ReponsePermissionDto getById(@PathVariable UUID id) {

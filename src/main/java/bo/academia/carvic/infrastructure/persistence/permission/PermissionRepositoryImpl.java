@@ -4,9 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+
+import bo.academia.carvic.domain.common.helpers.pagination.PageResponse;
+import bo.academia.carvic.domain.common.helpers.pagination.PageableRequest;
 import bo.academia.carvic.domain.permission.Permission;
 import bo.academia.carvic.domain.permission.PermissionRepository;
+import bo.academia.carvic.infrastructure.common.libraries.PaginationHelper;
 
 @Repository 
 public class PermissionRepositoryImpl implements PermissionRepository {
@@ -25,7 +31,6 @@ public class PermissionRepositoryImpl implements PermissionRepository {
         entity.setDescription(permission.getDescription());
         entity.setModule(permission.getModule());
         PermissionEntity saved = repository.save(entity);
-
         return mapToDomain(saved);
     }
 
@@ -67,5 +72,25 @@ public class PermissionRepositoryImpl implements PermissionRepository {
         permission.setCreatedAt(entity.getCreatedAt());
         permission.setUpdatedAt(entity.getUpdatedAt());
         return permission;
+    }
+
+    @Override
+    public PageResponse<Permission> findAllPaged(PageableRequest pageableRequest) {
+        //1. Traduce la peticion a Spring Pageable usando la libreria de paginacion
+        Pageable sprinPageable = PaginationHelper.toSpringPageable(pageableRequest);
+        //2. Ejecuta la consulta a la base de datos (Spring Data JPA)
+        Page<PermissionEntity> entityPage = repository.findAll(sprinPageable);
+        //3. Usa la libreria para mapear el Page<PermissionEntity> a PageResponse<Permission> (entidad de dominio)
+        return PaginationHelper.mapPaging(entityPage, entity -> 
+            new Permission(
+                entity.getId(),
+                entity.getName(),
+                entity.getTitle(),
+                entity.getDescription(),
+                entity.getModule(),
+                null,
+                null,
+                null
+            ));
     }
 }

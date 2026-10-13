@@ -20,7 +20,7 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, UUID> {
 
     @Query("SELECT u.id AS id, u.username AS username, u.email AS email, u.status AS status, r.name AS roleName " +
         "FROM UserEntity u JOIN u.role r")
-    Page<bo.academia.carvic.application.user.dto.UserProjection> fetchPagedUsers(Pageable pageable);
+    <T> Page<T> fetchPagedUsers(Pageable pageable, Class<T> type);
 
 
     @Query("SELECT new bo.academia.carvic.application.user.dto.UserListSummaryResponse(" +

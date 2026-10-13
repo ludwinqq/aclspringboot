@@ -5,11 +5,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import bo.academia.carvic.application.role.dto.RoleDto;
+import bo.academia.carvic.domain.common.helpers.pagination.PageResponse;
+import bo.academia.carvic.domain.common.helpers.pagination.PageableRequest;
 import bo.academia.carvic.domain.role.Role;
 import bo.academia.carvic.domain.role.RoleRepository;
+import bo.academia.carvic.infrastructure.common.libraries.PaginationHelper;
 
 
 @Repository 
@@ -77,6 +85,20 @@ public class RoleRepositoryImpl implements RoleRepository {
     @Transactional(readOnly = true)
     public Optional<Role> findByName(String name) {
         return repository.findByName(name).map(roleMapper::toDomain);
+    }
+
+    @Override
+    public PageResponse<Role> findAllPaged(PageableRequest request) {
+        // 1. Traduce la petición a Spring Pageable usando la librería de paginación
+        Pageable springPageable = PaginationHelper.toSpringPageable(request);
+
+        // 2. Ejecuta la consulta a la base de datos (Spring Data JPA)
+        Page<RoleEntity> entityPage = repository.findAll(springPageable);
+
+        // 3. Usa la librería para mapear el Page<RoleEntity> a PageResponse<Role> (Entidad de Dominio)
+        return PaginationHelper.mapPaging(entityPage, entity -> 
+            new Role(entity.getId(), entity.getName(), entity.getDescription())
+        );
     }
 
 }

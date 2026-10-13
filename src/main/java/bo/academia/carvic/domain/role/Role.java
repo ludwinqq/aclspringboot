@@ -19,6 +19,12 @@ public class Role {
     public Role() {
     }
 
+    public Role(UUID id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
     public Role(String name, String description, List<RolePermissionRule> permissionRules) {
 
         if ( name == null || name.isBlank() ) {

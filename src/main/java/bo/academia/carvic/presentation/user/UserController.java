@@ -2,12 +2,14 @@ package bo.academia.carvic.presentation.user;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import bo.academia.carvic.application.user.*;
 import bo.academia.carvic.application.user.dto.*;
-import bo.academia.carvic.domain.common.PagedResult;
+import bo.academia.carvic.domain.common.helpers.pagination.PageResponse;
 import bo.academia.carvic.domain.user.User;
 import bo.academia.carvic.presentation.user.dto.UserRequest;
 import bo.academia.carvic.presentation.user.dto.UserResponseDto;
@@ -27,6 +29,7 @@ public class UserController {
     private final FindByUsernameUserUseCase findByUsernameUserUseCase;
     private final FindByEmailUserUseCase findByEmailUserUseCase;
     private final UserMapper userMapper;
+    private final GetPagedUsersUseCase getPagedUsersUseCase;
 
     public UserController(
             CreateUserUseCase createUserUseCase,
@@ -38,7 +41,8 @@ public class UserController {
             FindAllUserUseCase findAllUserUseCase,
             FindByUsernameUserUseCase findByUsernameUserUseCase,
             FindByEmailUserUseCase findByEmailUserUseCase,
-            @Qualifier("presentationUserMapper") UserMapper userMapper) {
+            @Qualifier("presentationUserMapper") UserMapper userMapper,
+            GetPagedUsersUseCase getPagedUsersUseCase) {
         this.createUserUseCase = createUserUseCase;
         this.updateUserByAdminUseCase = updateUserByAdminUseCase;
         this.updateUserPasswordUseCase = updateUserPasswordUseCase;
@@ -49,6 +53,7 @@ public class UserController {
         this.findByUsernameUserUseCase = findByUsernameUserUseCase;
         this.findByEmailUserUseCase = findByEmailUserUseCase;
         this.userMapper = userMapper;
+        this.getPagedUsersUseCase = getPagedUsersUseCase;
     }
 
     // =========================================================================
@@ -83,13 +88,37 @@ public class UserController {
     }
 
     @GetMapping
+    public PageResponse<UserResponseDto> getAllPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "username") String sortBy,
+            @RequestParam(defaultValue = "ASC") String direction) {
+        
+        // 1. Ejecutas el caso de uso que te devuelve la página envuelta en entidades de dominio (o DTOs, según prefieras)
+        PageResponse<User> userPage = getPagedUsersUseCase.execute(page, size, sortBy, direction);
+        
+        // 2. Mapeas la lista interna de entidades a RoleResponseDto manteniendo la paginación
+        List<UserResponseDto> responseDtos = userPage.getContent().stream()
+                .map(userMapper::toResponse)
+                .collect(Collectors.toList());
+
+        // 3. Retornas la respuesta paginada con los DTOs de respuesta
+        return new PageResponse<>(
+                responseDtos,
+                userPage.getCurrentPage(),
+                userPage.getTotalPages(),
+                userPage.getTotalElements(),
+                userPage.getPageSize()
+        );
+    }
+    /*@GetMapping
     public PagedResult<UserProjection> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         
         // El controlador retorna directamente el PagedResult envuelto por tu ApiResponseAdvice de forma automática
         return findAllUserUseCase.execute(page, size);
-    }
+    }*/
 
     // =========================================================================
     // ENDPOINTS GESTIÓN ADMINISTRATIVA (PANEL DE USUARIOS)
